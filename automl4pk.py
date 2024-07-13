@@ -1088,14 +1088,6 @@ def fitness_function_train_test(pipeline, training_dataset, testing_dataset):
         print(e)
         return -1.0   
 
-def evaluate_fitness_old(population, fitness_function, dataset_path):
-    fitness_scores = []
-    for pipeline in population:
-        score = fitness_function(pipeline, dataset_path)
-        fitness_scores.append(score)
-        
-    return fitness_scores
-
 def evaluate_fitness(pipeline, dataset_path, time_budget_minutes_alg_eval, resample, generation):
     start_time = time.time()
     
@@ -1136,9 +1128,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="AutoML for PK Prediction")
     parser.add_argument("training_dir", help="Choose input CSV(comma-separated values) format file")
     parser.add_argument("testing_dir", help="Choose input CSV(comma-separated values) format file")
-    parser.add_argument("seed", help="Choose the pseudo-random seed to serve as input to the models", default=42, type=int)
-    parser.add_argument("num_cores", help="Choose the pseudo-random seed to serve as input to the models", default=1, type=int)
     parser.add_argument("output_dir", help="Choose output CSV(comma-separated values) format file")
+    parser.add_argument("-pop_size", help="Population size", default=30, type=int)
+    parser.add_argument("-xover_rate", help="Crossover rate", default=0.90, type=float)
+    parser.add_argument("-mut_rate", help="Mutaion rate", default=0.10, type=float)
+    parser.add_argument("-time_budget_min", help="AutoML time budget (in min)", default=60, type=int)
+    parser.add_argument("-time_budget_minutes_alg_eval", help="Algorithm/pipeline time budget (in min)", default=5, type=int)   
+    parser.add_argument("-seed", help="Choose the pseudo-random seed to serve as input to the models", default=42, type=int)
+    parser.add_argument("-num_cores", help="Choose the pseudo-random seed to serve as input to the models", default=1, type=int)
+
     args = parser.parse_args()
 
     grammar = {
@@ -1219,7 +1217,7 @@ if __name__ == '__main__':
     }
 
     start_symbol = "<Start>"
-    population_size = 10
+    population_size = args.pop_size
     seed = args.seed
     random.seed(seed)
     seed_sampling = 1
@@ -1231,9 +1229,9 @@ if __name__ == '__main__':
     elapsed_time = 0
 
     # Convert time budget from minutes to seconds
-    time_budget_min = 5
+    time_budget_min = args.time_budget_min
     time_budget_seconds = time_budget_min * 60
-    time_budget_minutes_alg_eval = 5
+    time_budget_minutes_alg_eval = args.time_budget_minutes_alg_eval
     num_cores = args.num_cores
 
     generation = 0
@@ -1241,7 +1239,7 @@ if __name__ == '__main__':
     while elapsed_time < time_budget_seconds:
         print("Generation", generation)
 
-        population = evolve(population, grammar, start_symbol, 0.10, 0.90, training_set_path, time_budget_minutes_alg_eval, num_cores, resample, seed_sampling, seed)
+        population = evolve(population, grammar, start_symbol, args.mut_rate, args.xover_rate, training_set_path, time_budget_minutes_alg_eval, num_cores, resample, seed_sampling, seed)
         elapsed_time = time.time() - start_time
         generation += 1
         if generation % 5 == 0:

@@ -21,6 +21,23 @@ After activating automl4pk environment, run:
 
 `python automl4pk.py training_file.csv testing_file.csv seed_number num_cores output_dir`
 
-E.g., using "datasets/01_caco2_train.csv" as the training set, "datasets/01_caco2_blindtest.csv" as the blind test, 1 as the seed number, 10 as the number of cores, and "." as the output directory, we would have:
+E.g., using:
 
-`python automl4pk.py datasets/01_caco2_train.csv datasets/01_caco2_blindtest.csv 1 10 .`
+* "datasets/01_caco2_train.csv" as the training file.csv
+* "datasets/01_caco2_blindtest.csv" as the testing file.csv
+* "." as the output directory (output_dir)
+
+`python automl4pk.py datasets/01_caco2_train.csv datasets/01_caco2_blindtest.csv .`
+
+Optional parameters can also be used:
+
+* population size (pop_size). Default value: 30.
+* crossover rate (xover_rate). Default value: 0.9.
+* mutation rate (mut_rate). Default value: 0.1.
+* time to run the AutoML method (time_budget_min). Default value: 60 (min).
+* time to run each algorithm/pipeline (time_budget_minutes_alg_eval). Default value: 5 (min).
+* Random seed (seed). Default value: 42.
+* Number of cores (num_cores). Default value: 1.
+
+
+`python automl4pk.py datasets/01_caco2_train.csv datasets/01_caco2_blindtest.csv . -pop_size 30 -xover_rate 0.9 -mut_rate 0.1 -time_budget_min 60 -time_budget_minutes_alg_eval 5 -seed 42 -num_cores 1`
